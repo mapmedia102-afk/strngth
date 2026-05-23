@@ -267,23 +267,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // Checkout using Shopify Storefront API
   const checkout = async () => {
     if (cart.length === 0) {
-      showToast('Your cart is empty.', 'error');
-      return;
+      throw new Error('Your cart is empty.');
     }
     const lineItems = cart.map((item) => ({
       variantId: item.selectedVariant as string,
       quantity: item.quantity,
     }));
-    try {
-      const checkoutUrl = await createCheckout(lineItems);
-      clearCart();
-      // Redirect to Shopify Checkout page
-      if (typeof window !== 'undefined') {
-        window.location.href = checkoutUrl;
-      }
-    } catch (e: any) {
-      console.error('Checkout creation failed', e);
-      showToast('Failed to initiate checkout. Please try again.', 'error');
+    // Will throw if Shopify returns errors - let the caller handle it
+    const checkoutUrl = await createCheckout(lineItems);
+    // Only clear cart and redirect after we have a valid URL
+    clearCart();
+    if (typeof window !== 'undefined') {
+      window.location.href = checkoutUrl;
     }
   };
 

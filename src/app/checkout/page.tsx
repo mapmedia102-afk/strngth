@@ -28,7 +28,7 @@ export default function CheckoutPage() {
         setStatus("error");
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, []); // run only once on mount - do NOT add cart as dependency
 
   return (
     <main className="min-h-screen flex flex-col bg-background">
