@@ -96,14 +96,18 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {bestsellers.map((product, idx) => {
-              const isWished = wishlist.some((w) => w.id === product.id);
+              const isWished = wishlist.some((w) => String(w.id) === String(product.id));
               return (
                 <motion.div key={product.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.1 }} className="group bg-background border border-primary/10 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300">
                   <Link href={`/product/${product.id}`} className={`block aspect-square bg-gradient-to-tr ${product.gradientTheme} relative overflow-hidden`}>
                     <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-black/5" />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-14 h-28 border-2 border-white/50 rounded-b-2xl bg-white/20 shadow-[0_8px_24px_rgba(255,255,255,0.45)] group-hover:scale-110 transition-transform duration-300" />
-                    </div>
+                    {product.image ? (
+                      <img src={product.image} alt={product.name} className="w-full h-full object-cover relative z-10 transition-transform duration-300 group-hover:scale-105" />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-14 h-28 border-2 border-white/50 rounded-b-2xl bg-white/20 shadow-[0_8px_24px_rgba(255,255,255,0.45)] group-hover:scale-110 transition-transform duration-300" />
+                      </div>
+                    )}
                     {product.discountPrice && <span className="absolute top-3 left-3 bg-destructive text-white text-[8px] font-bold px-2 py-1 rounded uppercase">Sale</span>}
                   </Link>
                   <div className="p-4 space-y-2">

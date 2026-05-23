@@ -30,7 +30,7 @@ export default function AdminDashboard() {
     const discountNum = newProdDiscount ? Number(newProdDiscount) : undefined;
 
     addProduct({
-      id: Math.max(0, ...products.map((p) => p.id)) + 1,
+      id: Date.now().toString(),
       name: newProdName,
       price: priceNum,
       discountPrice: discountNum,
@@ -278,7 +278,11 @@ export default function AdminDashboard() {
                   <div className="flex gap-4 items-center min-w-0">
                     <div className={`w-12 h-12 rounded bg-gradient-to-tr ${prod.gradientTheme} flex-shrink-0 flex items-center justify-center relative overflow-hidden`}>
                       <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-black/5" />
-                      <div className="w-4 h-8 border border-white/50 rounded-b bg-white/20" />
+                      {prod.image ? (
+                        <img src={prod.image} alt={prod.name} className="w-full h-full object-cover relative z-10" />
+                      ) : (
+                        <div className="w-4 h-8 border border-white/50 rounded-b bg-white/20" />
+                      )}
                     </div>
                     <div className="min-w-0">
                       <span className="font-semibold text-secondary block truncate">{prod.name}</span>

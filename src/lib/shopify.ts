@@ -21,14 +21,28 @@ query GetProducts($first: Int!) {
         id
         title
         description
+        productType
+        tags
         priceRange {
           minVariantPrice {
             amount
             currencyCode
           }
         }
-        images(first: 1) {
-          edges { node { src altText } }
+        images(first: 5) {
+          edges { node { src url altText } }
+        }
+        variants(first: 10) {
+          edges {
+            node {
+              id
+              title
+              price {
+                amount
+                currencyCode
+              }
+            }
+          }
         }
       }
     }

@@ -137,7 +137,11 @@ export default function Navbar() {
                     <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} key={`${item.product.id}-${item.selectedVariant}`} className="flex gap-4 border-b border-primary/5 pb-6 items-start">
                       <div className={`w-20 h-20 rounded bg-gradient-to-tr ${item.product.gradientTheme} flex-shrink-0 flex items-center justify-center relative overflow-hidden`}>
                         <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-black/5" />
-                        <div className="w-6 h-12 border border-white/50 rounded-b-md bg-white/20 relative shadow-[0_0_8px_rgba(255,255,255,0.4)]"><div className="absolute top-1 left-[2px] right-[2px] h-[1px] bg-white/60" /></div>
+                        {item.product.image ? (
+                          <img src={item.product.image} alt={item.product.name} className="w-full h-full object-cover relative z-10" />
+                        ) : (
+                          <div className="w-6 h-12 border border-white/50 rounded-b-md bg-white/20 relative shadow-[0_0_8px_rgba(255,255,255,0.4)]"><div className="absolute top-1 left-[2px] right-[2px] h-[1px] bg-white/60" /></div>
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <Link href={`/product/${item.product.id}`} onClick={() => setIsCartOpen(false)} className="font-serif text-sm font-semibold text-secondary hover:text-primary transition-colors block truncate">{item.product.name}</Link>

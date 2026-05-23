@@ -54,9 +54,13 @@ export default function Wishlist() {
                   {/* Thumbnail */}
                   <div className={`aspect-square bg-gradient-to-tr ${product.gradientTheme} relative overflow-hidden`}>
                     <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-black/5" />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-14 h-28 border-2 border-white/50 rounded-b-2xl bg-white/20 shadow-[0_8px_24px_rgba(255,255,255,0.45)] group-hover:scale-105 transition-transform duration-300" />
-                    </div>
+                    {product.image ? (
+                      <img src={product.image} alt={product.name} className="w-full h-full object-cover relative z-10 transition-transform duration-300 group-hover:scale-105" />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-14 h-28 border-2 border-white/50 rounded-b-2xl bg-white/20 shadow-[0_8px_24px_rgba(255,255,255,0.45)] group-hover:scale-105 transition-transform duration-300" />
+                      </div>
+                    )}
                     <button
                       onClick={() => {
                         toggleWishlist(product);

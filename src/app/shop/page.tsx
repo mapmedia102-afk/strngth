@@ -112,7 +112,7 @@ function ShopContent() {
         ) : (
           <div className={viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" : "space-y-4"}>
             {filteredProducts.map((product, idx) => {
-              const isWished = wishlist.some((w) => w.id === product.id);
+              const isWished = wishlist.some((w) => String(w.id) === String(product.id));
               if (viewMode === "list") {
                 return (
                   <motion.div
@@ -127,7 +127,11 @@ function ShopContent() {
                       className={`w-24 h-24 rounded bg-gradient-to-tr ${product.gradientTheme} flex-shrink-0 flex items-center justify-center relative overflow-hidden`}
                     >
                       <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-black/5" />
-                      <div className="w-6 h-12 border border-white/50 rounded-b-md bg-white/20 shadow-[0_4px_12px_rgba(255,255,255,0.4)]" />
+                      {product.image ? (
+                        <img src={product.image} alt={product.name} className="w-full h-full object-cover relative z-10" />
+                      ) : (
+                        <div className="w-6 h-12 border border-white/50 rounded-b-md bg-white/20 shadow-[0_4px_12px_rgba(255,255,255,0.4)]" />
+                      )}
                     </Link>
                     <div className="flex-1 space-y-1">
                       <span className="text-[9px] text-primary uppercase font-bold tracking-widest">{product.category}</span>
@@ -179,9 +183,13 @@ function ShopContent() {
                     className={`block aspect-square bg-gradient-to-tr ${product.gradientTheme} relative overflow-hidden`}
                   >
                     <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-black/5" />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-14 h-28 border-2 border-white/50 rounded-b-2xl bg-white/20 shadow-[0_8px_24px_rgba(255,255,255,0.45)] group-hover:scale-110 transition-transform duration-300" />
-                    </div>
+                    {product.image ? (
+                      <img src={product.image} alt={product.name} className="w-full h-full object-cover relative z-10 transition-transform duration-300 group-hover:scale-105" />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-14 h-28 border-2 border-white/50 rounded-b-2xl bg-white/20 shadow-[0_8px_24px_rgba(255,255,255,0.45)] group-hover:scale-110 transition-transform duration-300" />
+                      </div>
+                    )}
                     {product.discountPrice && (
                       <span className="absolute top-3 left-3 bg-destructive text-white text-[8px] font-bold px-2 py-1 rounded uppercase">
                         Sale

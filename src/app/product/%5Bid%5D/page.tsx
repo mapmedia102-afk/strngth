@@ -12,8 +12,8 @@ export default function ProductDetail() {
   const router = useRouter();
   const { products, addToCart, toggleWishlist, wishlist, showToast } = useApp();
 
-  const productId = Number(params?.id);
-  const product = products.find((p) => p.id === productId);
+  const productId = params?.id ? decodeURIComponent(params.id as string) : "";
+  const product = products.find((p) => String(p.id).split("/").pop() === productId || String(p.id) === productId);
 
   const [selectedVariant, setSelectedVariant] = useState("");
   const [quantity, setQuantity] = useState(1);
@@ -43,7 +43,7 @@ export default function ProductDetail() {
     );
   }
 
-  const isFavorited = wishlist.some((p) => p.id === product.id);
+  const isFavorited = wishlist.some((p) => String(p.id) === String(product.id));
 
   const handleAddToCart = () => {
     addToCart(product, selectedVariant, quantity);
@@ -68,9 +68,13 @@ export default function ProductDetail() {
           <div className="space-y-4">
             <div className={`aspect-square rounded-3xl bg-gradient-to-tr ${product.gradientTheme} flex items-center justify-center relative overflow-hidden shadow-sm`}>
               <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-black/5" />
-              <div className="w-24 h-48 border-4 border-white/50 rounded-b-3xl bg-white/20 relative shadow-[0_16px_48px_rgba(255,255,255,0.5)] flex items-end p-4">
-                <div className="w-full bg-white/10 h-1/4 rounded-b-2xl animate-pulse" />
-              </div>
+              {product.image ? (
+                <img src={product.image} alt={product.name} className="w-full h-full object-cover relative z-10" />
+              ) : (
+                <div className="w-24 h-48 border-4 border-white/50 rounded-b-3xl bg-white/20 relative shadow-[0_16px_48px_rgba(255,255,255,0.5)] flex items-end p-4">
+                  <div className="w-full bg-white/10 h-1/4 rounded-b-2xl animate-pulse" />
+                </div>
+              )}
 
               {/* Badges */}
               {product.tags.includes("bestseller") && (
