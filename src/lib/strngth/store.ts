@@ -654,7 +654,7 @@ export const useStrngthStore = create<StrngthState>()(
           const MOCK_UNLOCKED_IDS = new Set(['b1', 'b2', 'b4', 'b5', 'b6', 'b9', 'b11', 'b12']);
           if (p.badges) {
             p.badges = (p.badges as Badge[]).map(b =>
-              MOCK_UNLOCKED_IDS.has(b.id) ? { ...b, unlocked: false, unlockedAt: null } : b
+              MOCK_UNLOCKED_IDS.has(b.id) ? { ...b, unlocked: false, unlockedAt: undefined } : b
             );
           }
         }

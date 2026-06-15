@@ -73,18 +73,18 @@ export const MOCK_WEEKLY_QUESTS: Quest[] = [
 ];
 
 export const MOCK_BADGES: Badge[] = [
-  { id: 'b1', name: 'First Blood', description: 'Complete your first workout', icon: '⚔️', color: '#ef4444', unlocked: false, unlockedAt: null, rarity: 'common' },
-  { id: 'b2', name: 'Iron Will', description: 'Complete 50 workouts', icon: '🛡️', color: '#8b5cf6', unlocked: false, unlockedAt: null, rarity: 'rare' },
-  { id: 'b3', name: 'Streak Master', description: 'Achieve a 30-day streak', icon: '🔥', color: '#f97316', unlocked: false, unlockedAt: null, rarity: 'epic' },
-  { id: 'b4', name: 'Shadow Hunter', description: 'Reach A Rank', icon: '🌑', color: '#f59e0b', unlocked: false, unlockedAt: null, rarity: 'epic' },
-  { id: 'b5', name: 'Volume King', description: 'Lift 1,000,000 kg lifetime', icon: '👑', color: '#f59e0b', unlocked: false, unlockedAt: null, rarity: 'legendary' },
-  { id: 'b6', name: 'Century Club', description: 'Complete 100 workouts', icon: '💯', color: '#10b981', unlocked: false, unlockedAt: null, rarity: 'rare' },
-  { id: 'b7', name: 'Monarch', description: 'Reach SS Rank', icon: '💎', color: '#ec4899', unlocked: false, unlockedAt: null, rarity: 'legendary' },
-  { id: 'b8', name: 'Guild Captain', description: 'Lead a guild to top 10', icon: '⚡', color: '#00d4ff', unlocked: false, unlockedAt: null, rarity: 'epic' },
-  { id: 'b9', name: 'Early Bird', description: 'Workout before 7am, 10 times', icon: '🌅', color: '#f59e0b', unlocked: false, unlockedAt: null, rarity: 'common' },
-  { id: 'b10', name: 'Apex Predator', description: 'Reach SSS Rank', icon: '🔮', color: '#ec4899', unlocked: false, unlockedAt: null, rarity: 'legendary' },
-  { id: 'b11', name: 'Iron Legion', description: 'Join a guild', icon: '⚔️', color: '#3b82f6', unlocked: false, unlockedAt: null, rarity: 'common' },
-  { id: 'b12', name: 'Phantom Speed', description: 'Complete a workout in under 30 mins', icon: '💨', color: '#00d4ff', unlocked: false, unlockedAt: null, rarity: 'rare' },
+  { id: 'b1', name: 'First Blood', description: 'Complete your first workout', icon: '⚔️', color: '#ef4444', unlocked: false, unlockedAt: undefined, rarity: 'common' },
+  { id: 'b2', name: 'Iron Will', description: 'Complete 50 workouts', icon: '🛡️', color: '#8b5cf6', unlocked: false, unlockedAt: undefined, rarity: 'rare' },
+  { id: 'b3', name: 'Streak Master', description: 'Achieve a 30-day streak', icon: '🔥', color: '#f97316', unlocked: false, unlockedAt: undefined, rarity: 'epic' },
+  { id: 'b4', name: 'Shadow Hunter', description: 'Reach A Rank', icon: '🌑', color: '#f59e0b', unlocked: false, unlockedAt: undefined, rarity: 'epic' },
+  { id: 'b5', name: 'Volume King', description: 'Lift 1,000,000 kg lifetime', icon: '👑', color: '#f59e0b', unlocked: false, unlockedAt: undefined, rarity: 'legendary' },
+  { id: 'b6', name: 'Century Club', description: 'Complete 100 workouts', icon: '💯', color: '#10b981', unlocked: false, unlockedAt: undefined, rarity: 'rare' },
+  { id: 'b7', name: 'Monarch', description: 'Reach SS Rank', icon: '💎', color: '#ec4899', unlocked: false, unlockedAt: undefined, rarity: 'legendary' },
+  { id: 'b8', name: 'Guild Captain', description: 'Lead a guild to top 10', icon: '⚡', color: '#00d4ff', unlocked: false, unlockedAt: undefined, rarity: 'epic' },
+  { id: 'b9', name: 'Early Bird', description: 'Workout before 7am, 10 times', icon: '🌅', color: '#f59e0b', unlocked: false, unlockedAt: undefined, rarity: 'common' },
+  { id: 'b10', name: 'Apex Predator', description: 'Reach SSS Rank', icon: '🔮', color: '#ec4899', unlocked: false, unlockedAt: undefined, rarity: 'legendary' },
+  { id: 'b11', name: 'Iron Legion', description: 'Join a guild', icon: '⚔️', color: '#3b82f6', unlocked: false, unlockedAt: undefined, rarity: 'common' },
+  { id: 'b12', name: 'Phantom Speed', description: 'Complete a workout in under 30 mins', icon: '💨', color: '#00d4ff', unlocked: false, unlockedAt: undefined, rarity: 'rare' },
 ];
 
 export const MOCK_LEADERBOARD: LeaderboardEntry[] = [
