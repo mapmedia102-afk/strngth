@@ -8,7 +8,6 @@ import { ensureUserDoc, subscribeUser, pushUserDoc, addSession, loadRecentSessio
 
 type State = ReturnType<typeof useStrngthStore.getState>;
 
-/** The slices we mirror to Firestore (history lives in a subcollection, not here). */
 function sliceOf(s: State): SyncableState {
   return {
     player: s.player,
@@ -26,16 +25,22 @@ function sliceOf(s: State): SyncableState {
 
 /**
  * Headless component: keeps Firestore and the Zustand store in sync per Auth UID.
- * - On sign-in: ensure starter doc, load history, subscribe (real-time) + push (debounced).
- * - On sign-out: detach + reset the store so no data leaks between users.
+ *
+ * KEY FIX: We wait for auth.authStateReady() before subscribing to
+ * onAuthStateChanged. Without this, Firebase fires the callback with user=null
+ * immediately on mount (before it reads the persisted session from IndexedDB),
+ * which triggers resetToDefaults() → onboarded=false → redirect to welcome
+ * screen even though the user is still logged in.
  */
 export default function FirebaseSync() {
   const uidRef = useRef<string | null>(null);
   const unsubCloud = useRef<(() => void) | null>(null);
   const unsubStore = useRef<(() => void) | null>(null);
+  const unsubAuth = useRef<(() => void) | null>(null);
   const applyingCloud = useRef(false);
   const lastSlice = useRef('');
   const lastSessionId = useRef<string | null>(null);
+  const mountedRef = useRef(true);
 
   useEffect(() => {
     if (!isFirebaseConfigured) return;
@@ -50,72 +55,74 @@ export default function FirebaseSync() {
       lastSessionId.current = null;
     };
 
-    const unsubAuth = onAuthStateChanged(auth, async user => {
-      detach();
+    const subscribe = () => {
+      if (!mountedRef.current) return;
 
-      if (!user) {
-        useStrngthStore.getState().resetToDefaults();
-        return;
-      }
+      unsubAuth.current = onAuthStateChanged(auth, async user => {
+        detach();
 
-      uidRef.current = user.uid;
-
-      try {
-        // Create the starter doc if this UID is brand new (merges pre-login data).
-        await ensureUserDoc(user.uid, user, sliceOf(useStrngthStore.getState()));
-        if (uidRef.current !== user.uid) return;
-
-        // One-time: reset mock player stats in Firestore (level 47, 247 workouts, etc.).
-        await cleanMockPlayerData(user.uid);
-        if (uidRef.current !== user.uid) return;
-
-        // One-time: strip hardcoded mock PRs from Firestore if still present.
-        await cleanMockPRs(user.uid);
-        if (uidRef.current !== user.uid) return;
-
-        // Load recent workout history from the subcollection.
-        const sessions = await loadRecentSessions(user.uid);
-        if (uidRef.current !== user.uid) return;
-        useStrngthStore.setState({ workoutHistory: sessions });
-        lastSessionId.current = sessions[0]?.id ?? null;
-      } catch (e) {
-        const err = e as { name?: string; code?: string };
-        const isOffline = err?.name === 'AbortError' || err?.code === 'unavailable' || err?.code === 'failed-precondition';
-        if (!isOffline) console.error('[strngth] user setup failed', e);
-        return;
-      }
-
-      // Real-time: Firestore → store.
-      unsubCloud.current = subscribeUser(user.uid, cloud => {
-        applyingCloud.current = true;
-        useStrngthStore.getState().hydrateFromCloud(cloud);
-        applyingCloud.current = false;
-      });
-
-      // store → Firestore (debounced doc write + session appends).
-      lastSlice.current = JSON.stringify(sliceOf(useStrngthStore.getState()));
-      unsubStore.current = useStrngthStore.subscribe(state => {
-        const uid = uidRef.current;
-        if (!uid) return;
-
-        // New completed workout → append a session doc.
-        if (state.lastSession && state.lastSession.id !== lastSessionId.current) {
-          lastSessionId.current = state.lastSession.id;
-          addSession(uid, state.lastSession);
+        if (!user) {
+          useStrngthStore.getState().resetToDefaults();
+          return;
         }
 
-        // Skip echo writes triggered by our own cloud hydrate.
-        if (applyingCloud.current) return;
-        const slice = sliceOf(state);
-        const json = JSON.stringify(slice);
-        if (json === lastSlice.current) return;
-        lastSlice.current = json;
-        pushUserDoc(uid, slice);
+        uidRef.current = user.uid;
+
+        try {
+          await ensureUserDoc(user.uid, user, sliceOf(useStrngthStore.getState()));
+          if (uidRef.current !== user.uid) return;
+
+          await cleanMockPlayerData(user.uid);
+          if (uidRef.current !== user.uid) return;
+
+          await cleanMockPRs(user.uid);
+          if (uidRef.current !== user.uid) return;
+
+          const sessions = await loadRecentSessions(user.uid);
+          if (uidRef.current !== user.uid) return;
+          useStrngthStore.setState({ workoutHistory: sessions });
+          lastSessionId.current = sessions[0]?.id ?? null;
+        } catch (e) {
+          const err = e as { name?: string; code?: string };
+          const isOffline = err?.name === 'AbortError' || err?.code === 'unavailable' || err?.code === 'failed-precondition';
+          if (!isOffline) console.error('[strngth] user setup failed', e);
+          return;
+        }
+
+        unsubCloud.current = subscribeUser(user.uid, cloud => {
+          applyingCloud.current = true;
+          useStrngthStore.getState().hydrateFromCloud(cloud);
+          applyingCloud.current = false;
+        });
+
+        lastSlice.current = JSON.stringify(sliceOf(useStrngthStore.getState()));
+        unsubStore.current = useStrngthStore.subscribe(state => {
+          const uid = uidRef.current;
+          if (!uid) return;
+
+          if (state.lastSession && state.lastSession.id !== lastSessionId.current) {
+            lastSessionId.current = state.lastSession.id;
+            addSession(uid, state.lastSession);
+          }
+
+          if (applyingCloud.current) return;
+          const slice = sliceOf(state);
+          const json = JSON.stringify(slice);
+          if (json === lastSlice.current) return;
+          lastSlice.current = json;
+          pushUserDoc(uid, slice);
+        });
       });
-    });
+    };
+
+    // Wait until Firebase has restored the persisted auth session from
+    // IndexedDB before subscribing. This prevents the spurious null→user
+    // double-fire that resets the store and kicks the user to onboarding.
+    auth.authStateReady().then(subscribe).catch(subscribe);
 
     return () => {
-      unsubAuth();
+      mountedRef.current = false;
+      unsubAuth.current?.();
       detach();
     };
   }, []);
