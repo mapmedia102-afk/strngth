@@ -41,6 +41,9 @@ export async function ensureUserDoc(uid: string, authUser: User, state: Syncable
 
     await setDoc(ref, {
       ...docData,
+      // Always mark onboarded true in Firestore for new docs created from the
+      // sign-in flow — the user reached here by completing onboarding.
+      onboarded: true,
       subscription: {
         isPremium: false,
         planName: 'free',

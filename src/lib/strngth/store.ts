@@ -183,7 +183,7 @@ export const useStrngthStore = create<StrngthState>()(
         privacySettings: partial.privacySettings ?? state.privacySettings,
         programs: partial.programs ?? state.programs,
         theme: partial.theme ?? state.theme,
-        onboarded: typeof partial.onboarded === 'boolean' ? partial.onboarded : state.onboarded,
+        onboarded: partial.onboarded === true ? true : state.onboarded,
         onboarding: partial.onboarding ?? state.onboarding,
         subscription: partial.subscription ?? state.subscription,
         cloudLoaded: true,
