@@ -641,6 +641,22 @@ export default function ProfilePage() {
                   </div>
                 )}
               </div>
+
+              {/* Log Out */}
+              <motion.button
+                onClick={() => setConfirmLogout(true)}
+                whileTap={{ scale: 0.98 }}
+                className="w-full py-4 rounded-2xl flex items-center justify-center gap-2.5 font-black text-sm tracking-wide"
+                style={{
+                  background: 'rgba(0,212,255,0.06)',
+                  border: '1.5px solid rgba(0,212,255,0.25)',
+                  color: '#00d4ff',
+                  fontFamily: 'var(--gym-font-display-loaded, Orbitron, monospace)',
+                }}
+              >
+                <LogOut size={16} />
+                LOG OUT
+              </motion.button>
             </motion.div>
           )}
 
@@ -952,8 +968,7 @@ export default function ProfilePage() {
               <div>
                 <SectionLabel>DANGER ZONE</SectionLabel>
                 <div className="space-y-2">
-                  <SettingsRow icon={RotateCcw} label="Reset Progress"  danger onClick={() => setConfirmReset(true)} />
-                  <SettingsRow icon={LogOut}   label="Log Out"   color="#00d4ff" onClick={() => setConfirmLogout(true)} />
+                  <SettingsRow icon={RotateCcw} label="Reset Progress" danger onClick={() => setConfirmReset(true)} />
                 </div>
               </div>
             </motion.div>
