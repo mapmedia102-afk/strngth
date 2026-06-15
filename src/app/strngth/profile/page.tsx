@@ -499,15 +499,15 @@ export default function ProfilePage() {
                 onClick={() => setActiveTab(tab.id)}
                 className="flex flex-col items-center gap-1 py-2.5 rounded-2xl"
                 style={{
-                  background: active ? `${rankCfg.color}18` : 'rgba(255,255,255,0.04)',
-                  border: `1.5px solid ${active ? rankCfg.color + '50' : 'rgba(255,255,255,0.07)'}`,
-                  boxShadow: active ? `0 0 12px ${rankCfg.color}25` : 'none',
+                  background: active ? `${rankCfg.color}18` : 'rgba(255,255,255,0.08)',
+                  border: `1.5px solid ${active ? rankCfg.color + '80' : 'rgba(255,255,255,0.22)'}`,
+                  boxShadow: active ? `0 0 12px ${rankCfg.color}35` : 'none',
                 }}
                 whileTap={{ scale: 0.94 }}
               >
-                <Icon size={16} style={{ color: active ? rankCfg.color : 'var(--gym-text-muted)' }} />
+                <Icon size={16} style={{ color: active ? rankCfg.color : 'rgba(255,255,255,0.75)' }} />
                 <span className="text-[9px] font-bold"
-                  style={{ color: active ? rankCfg.color : 'var(--gym-text-muted)', fontFamily: 'var(--gym-font-display-loaded, Orbitron, monospace)', letterSpacing: '0.05em' }}>
+                  style={{ color: active ? rankCfg.color : 'rgba(255,255,255,0.75)', fontFamily: 'var(--gym-font-display-loaded, Orbitron, monospace)', letterSpacing: '0.05em' }}>
                   {tab.label.toUpperCase()}
                 </span>
               </motion.button>
