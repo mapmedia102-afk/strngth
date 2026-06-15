@@ -9,6 +9,11 @@
   inherits: false;
 }
 
+/* Fill the iOS status bar area with the app background color */
+body {
+  background-color: #03030a;
+}
+
 :root {
   /* Backgrounds */
   --gym-bg: #03030a;
