@@ -8,7 +8,10 @@ export default function WelcomePage() {
   const router = useRouter();
 
   return (
-    <div className="relative h-dvh flex flex-col px-6 pt-6 pb-8 max-w-2xl mx-auto w-full overflow-hidden">
+    <div
+      className="relative h-dvh flex flex-col px-6 max-w-2xl mx-auto w-full overflow-hidden"
+      style={{ paddingTop: 'max(24px, env(safe-area-inset-top))', paddingBottom: 'max(32px, env(safe-area-inset-bottom))' }}
+    >
       {/* Centered ambient glow */}
       <div
         className="absolute left-1/2 top-[34%] -translate-x-1/2 -translate-y-1/2 w-[420px] h-[420px] rounded-full pointer-events-none -z-0"

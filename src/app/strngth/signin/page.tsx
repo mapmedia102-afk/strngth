@@ -116,7 +116,7 @@ export default function SignInPage() {
     }) as const;
 
   return (
-    <div className="min-h-dvh flex flex-col px-6 pt-6 pb-8 max-w-lg mx-auto w-full">
+    <div className="min-h-dvh flex flex-col px-6 max-w-lg mx-auto w-full" style={{ paddingTop: 'max(24px, env(safe-area-inset-top))', paddingBottom: 'max(32px, env(safe-area-inset-bottom))' }}>
       {/* Back */}
       <button onClick={() => router.push('/strngth/welcome')} aria-label="Back" className="w-8 h-8 flex items-center justify-center -ml-1 mb-5" style={{ color: 'var(--gym-text-dim)' }}>
         <ChevronLeft size={22} />

@@ -35,7 +35,13 @@ export default function StepFrame({
   skipLabel?: string;
 }) {
   return (
-    <div className="h-dvh flex flex-col px-5 pt-5 pb-5 max-w-2xl mx-auto w-full">
+    <div
+      className="h-dvh flex flex-col px-5 max-w-2xl mx-auto w-full"
+      style={{
+        paddingTop: 'max(20px, env(safe-area-inset-top))',
+        paddingBottom: 'max(20px, env(safe-area-inset-bottom))',
+      }}
+    >
       {/* Top row: back + progress */}
       <div className="flex items-center gap-3 flex-shrink-0">
         {onBack ? (

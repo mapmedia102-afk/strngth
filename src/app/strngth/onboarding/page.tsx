@@ -86,10 +86,11 @@ export default function OnboardingPage() {
   const bmi = bmiInfo(onboarding.weight, onboarding.gender);
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="h-dvh overflow-x-hidden relative">
       <AnimatePresence mode="wait" custom={dir} initial={false}>
         <motion.div
           key={step}
+          className="h-full"
           custom={dir}
           variants={slide}
           initial="enter"
@@ -99,23 +100,29 @@ export default function OnboardingPage() {
         >
           {/* ── Step 0: Intro mascot ───────────────────────────── */}
           {step === 0 && (
-            <div className="h-dvh flex flex-col items-center px-6 pt-6 pb-6 max-w-2xl mx-auto w-full">
-              <div className="w-full flex items-center">
+            <div
+              className="h-full flex flex-col items-center px-6 max-w-2xl mx-auto w-full"
+              style={{
+                paddingTop: 'max(24px, env(safe-area-inset-top))',
+                paddingBottom: 'max(24px, env(safe-area-inset-bottom))',
+              }}
+            >
+              <div className="w-full flex items-center flex-shrink-0">
                 <button onClick={back} aria-label="Back" className="w-8 h-8 flex items-center justify-center -ml-1" style={{ color: 'var(--gym-text-dim)' }}>
                   ‹
                 </button>
               </div>
-              <div className="mt-2 w-full max-w-md">
+              <div className="mt-3 w-full max-w-md flex-shrink-0">
                 <SpeechBubble tail="down">
                   <span className="block text-center">I just have a few questions for you and we can get started!</span>
                 </SpeechBubble>
               </div>
-              <div className="flex-1 flex items-center justify-center">
+              <div className="flex-1 flex items-center justify-center min-h-0">
                 <Mascot size={190} />
               </div>
               <button
                 onClick={() => go(1)}
-                className="w-full py-4 rounded-2xl font-black text-base tracking-wide"
+                className="w-full py-4 rounded-2xl font-black text-base tracking-wide flex-shrink-0"
                 style={{ background: '#00d4ff', color: CYAN, boxShadow: '0 0 24px #00d4ff40', fontFamily: 'var(--gym-font-display-loaded, Orbitron, monospace)' }}
               >
                 SOUNDS GOOD!

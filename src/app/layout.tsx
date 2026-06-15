@@ -58,7 +58,7 @@ export default function RootLayout({
       <head>
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body className="min-h-full flex flex-col bg-background text-foreground font-sans" style={{ paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)' }} suppressHydrationWarning>
+      <body className="min-h-full flex flex-col bg-background text-foreground font-sans" suppressHydrationWarning>
         {/* Inline script runs before any module JS, so registers before Next.js dev overlay */}
         <script dangerouslySetInnerHTML={{__html:`(function(){function s(v){if(!v)return false;var m=v.message||'',t=v.stack||'';return v.name==='AbortError'||/aborted a request/i.test(m)||/chrome-extension:\\/\\//i.test(t)||/client is offline/i.test(m)||/\\[code=unavailable\\]/i.test(m)||/Could not reach Cloud Firestore/i.test(m);}window.addEventListener('error',function(e){if(s(e.error)||/aborted a request/i.test(e.message||'')){e.preventDefault();e.stopImmediatePropagation();}},true);window.addEventListener('unhandledrejection',function(e){if(s(e.reason)){e.preventDefault();e.stopImmediatePropagation();}},true);})();`}} />
         <AppProvider>

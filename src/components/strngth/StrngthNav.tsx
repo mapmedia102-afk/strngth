@@ -90,7 +90,7 @@ export default function StrngthNav() {
       {/* Mobile Bottom Nav */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40"
         style={{ background: 'var(--gym-nav-bg)', borderTop: '1px solid var(--gym-border)', backdropFilter: 'blur(20px)' }}>
-        <div className="flex items-center justify-around px-2 py-2">
+        <div className="flex items-center justify-around px-2 pt-2" style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}>
           {NAV_ITEMS.map(({ href, icon: Icon, label }) => {
             const isActive = href === '/strngth' ? pathname === '/strngth' : pathname.startsWith(href);
             return (
