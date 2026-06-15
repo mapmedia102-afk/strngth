@@ -5,6 +5,7 @@ import StrngthThemeWrapper from '@/components/strngth/StrngthThemeWrapper';
 import StrngthChrome from '@/components/strngth/StrngthChrome';
 import FirebaseSync from '@/components/strngth/FirebaseSync';
 import ServiceWorkerRegistration from '@/components/strngth/ServiceWorkerRegistration';
+import ImagePreloader from '@/components/strngth/ImagePreloader';
 
 const orbitron = Orbitron({
   subsets: ['latin'],
@@ -47,6 +48,7 @@ export default function StrngthLayout({ children }: { children: React.ReactNode 
       className={`strngth ${orbitron.variable} ${outfit.variable}`}
     >
       <ServiceWorkerRegistration />
+      <ImagePreloader />
       <FirebaseSync />
       <StrngthChrome>{children}</StrngthChrome>
     </StrngthThemeWrapper>
