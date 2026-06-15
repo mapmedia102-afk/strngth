@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Outfit, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "@/context/AppContext";
+import ServiceWorkerRegistration from "@/components/strngth/ServiceWorkerRegistration";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -16,18 +17,27 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "GLOCASA | Premium Glassware & Drinkware | Modern Indian Luxury",
-  description: "Experience Apple-style luxury drinkware. Shop premium ribbed tumblers, café-aesthetic coffee mugs, and imperial gold crystal wine glasses. Made for aesthetic homes.",
-  keywords: "premium glassware India, D2C drinkware, gold rimmed tumblers, aesthetic coffee mugs, wine glasses online, aesthetic kitchenware, GLOCASA, Indian home decor",
-  authors: [{ name: "GLOCASA Luxury" }],
-  openGraph: {
-    title: "GLOCASA | Premium Glassware & Drinkware | Modern Indian Luxury",
-    description: "Shop premium ribbed tumblers, café-aesthetic coffee mugs, and imperial gold crystal wine glasses. Crafted for aesthetic homes.",
-    url: "https://glocasa.in",
-    siteName: "GLOCASA Glassware",
-    type: "website",
+  title: "Strngth — Fitness RPG",
+  description: "Level up your fitness. Track workouts, earn XP, climb the ranks.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Strngth",
   },
-  robots: { index: true, follow: true },
+  formatDetection: { telephone: false },
+  icons: {
+    icon: [
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+    "msapplication-TileColor": "#03030a",
+    "msapplication-TileImage": "/icons/icon-144x144.png",
+  },
 };
 
 export default function RootLayout({
@@ -37,12 +47,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${outfit.variable} ${playfair.variable} h-full antialiased`} suppressHydrationWarning>
+      <head>
+        <meta name="theme-color" content="#00d4ff" />
+        <meta name="theme-color" content="#03030a" media="(prefers-color-scheme: dark)" />
+        <link rel="manifest" href="/manifest.json" />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans" suppressHydrationWarning>
         {/* Inline script runs before any module JS, so registers before Next.js dev overlay */}
         <script dangerouslySetInnerHTML={{__html:`(function(){function s(v){if(!v)return false;var m=v.message||'',t=v.stack||'';return v.name==='AbortError'||/aborted a request/i.test(m)||/chrome-extension:\\/\\//i.test(t)||/client is offline/i.test(m)||/\\[code=unavailable\\]/i.test(m)||/Could not reach Cloud Firestore/i.test(m);}window.addEventListener('error',function(e){if(s(e.error)||/aborted a request/i.test(e.message||'')){e.preventDefault();e.stopImmediatePropagation();}},true);window.addEventListener('unhandledrejection',function(e){if(s(e.reason)){e.preventDefault();e.stopImmediatePropagation();}},true);})();`}} />
         <AppProvider>
           {children}
         </AppProvider>
+        <ServiceWorkerRegistration />
       </body>
     </html>
   );
