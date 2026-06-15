@@ -125,6 +125,7 @@ interface StrngthState {
   closeNotifications: () => void;
   markNotificationRead: (id: string) => void;
   markAllNotificationsRead: () => void;
+  addNotification: (notif: Omit<GymNotification, 'id' | 'timestamp' | 'read'>) => void;
 }
 
 export const useStrngthStore = create<StrngthState>()(
@@ -266,6 +267,7 @@ export const useStrngthStore = create<StrngthState>()(
         const today = new Date().toISOString().split('T')[0];
         if (get().lastCheckInDate === today) return;
         get().gainXP(50, 'Daily Check-in');
+        get().addNotification({ type: 'xp', title: 'Daily Check-in!', body: '+50 XP for showing up today. Keep the streak alive!', icon: '☀️', color: '#00d4ff' });
         set({ lastCheckInDate: today });
       },
 
@@ -312,13 +314,21 @@ export const useStrngthStore = create<StrngthState>()(
             e.isCurrentUser ? { ...e, totalXP: newTotalXP, level: newLevel, playerRank: newRank } : e
           ),
         }));
+
+        // Fire notifications for level / rank milestones
+        if (leveledUp) {
+          get().addNotification({ type: 'levelup', title: `Level ${newLevel} Reached!`, body: `You leveled up! Keep pushing your limits.`, icon: '⚡', color: '#00d4ff' });
+        }
+        if (rankedUp) {
+          get().addNotification({ type: 'levelup', title: `Rank Up — ${newRank}!`, body: `You advanced to ${newRank} Rank. New power unlocked.`, icon: '🏆', color: '#f59e0b' });
+        }
       },
 
       completeQuest: (questId) => {
         const quest = [...get().dailyQuests, ...get().weeklyQuests].find(q => q.id === questId);
-        // Only claimable once progress has actually reached the target.
         if (!quest || quest.completed || quest.progress < quest.target) return;
         get().gainXP(quest.xpReward, quest.title);
+        get().addNotification({ type: 'quest', title: 'Quest Complete!', body: `${quest.title} — +${quest.xpReward} XP earned.`, icon: '✅', color: '#10b981' });
         set(state => ({
           dailyQuests: state.dailyQuests.map(q => q.id === questId ? { ...q, completed: true } : q),
           weeklyQuests: state.weeklyQuests.map(q => q.id === questId ? { ...q, completed: true } : q),
@@ -494,20 +504,72 @@ export const useStrngthStore = create<StrngthState>()(
           else if (dayDiff === 1) newStreak = player.streak + 1; // consecutive day
         }
 
+        const newTotalWorkouts = player.totalWorkouts + 1;
+        const newTotalVolume = player.totalVolume + totalVolume;
+
         set(state => ({
           activeWorkout: null,
           workoutHistory: [history, ...state.workoutHistory].slice(0, 20),
           lastSession: history,
           player: {
             ...state.player,
-            totalWorkouts: state.player.totalWorkouts + 1,
-            totalVolume: state.player.totalVolume + totalVolume,
+            totalWorkouts: newTotalWorkouts,
+            totalVolume: newTotalVolume,
             lastWorkoutDate: todayISO,
             personalRecords: records,
             streak: newStreak,
             longestStreak: Math.max(state.player.longestStreak ?? 0, newStreak),
           },
         }));
+
+        // Workout complete notification
+        const mins = Math.floor(duration / 60);
+        get().addNotification({
+          type: 'xp', title: 'Workout Complete! 💪',
+          body: `${activeWorkout.planName} · ${mins}m · +${activeWorkout.totalXPGained} XP`,
+          icon: '🏋️', color: '#10b981',
+        });
+
+        // Streak milestone notifications
+        const streakMilestones = [3, 7, 14, 21, 30, 60, 100];
+        if (newStreak > player.streak && streakMilestones.includes(newStreak)) {
+          get().addNotification({
+            type: 'streak', title: `${newStreak}-Day Streak! 🔥`,
+            body: `${newStreak} consecutive days of training. You're unstoppable!`,
+            icon: '🔥', color: '#f97316',
+          });
+        }
+
+        // Personal record notifications (one per exercise that broke a PR)
+        for (const [exercise, best] of sessionBest) {
+          const prev = player.personalRecords.find(r => r.exercise === exercise);
+          const isNewPR = !prev || best.weight > prev.weight || (best.weight === prev.weight && best.reps > prev.reps);
+          if (isNewPR) {
+            get().addNotification({
+              type: 'xp', title: 'Personal Record! 🏆',
+              body: `New PR on ${exercise}: ${best.weight}kg × ${best.reps} reps`,
+              icon: '🏅', color: '#f59e0b',
+            });
+          }
+        }
+
+        // Badge auto-unlock checks
+        const { badges } = get();
+        const unlockBadge = (id: string, title: string, body: string, icon: string, color: string) => {
+          const badge = badges.find(b => b.id === id);
+          if (!badge || badge.unlocked) return;
+          set(state => ({
+            badges: state.badges.map(b => b.id === id ? { ...b, unlocked: true, unlockedAt: new Date().toISOString() } : b),
+          }));
+          get().addNotification({ type: 'badge', title, body, icon, color });
+        };
+        if (newTotalWorkouts >= 1) unlockBadge('b1', 'Badge Unlocked: First Blood!', 'You completed your first workout!', '⚔️', '#ef4444');
+        if (newTotalWorkouts >= 50) unlockBadge('b2', 'Badge Unlocked: Iron Will!', '50 workouts completed. Pure dedication.', '🛡️', '#8b5cf6');
+        if (newTotalWorkouts >= 100) unlockBadge('b6', 'Badge Unlocked: Century Club!', '100 workouts! You are elite.', '💯', '#10b981');
+        if (newStreak >= 30) unlockBadge('b3', 'Badge Unlocked: Streak Master!', '30-day streak achieved. Legendary!', '🔥', '#f97316');
+        if (newTotalVolume >= 1_000_000) unlockBadge('b5', 'Badge Unlocked: Volume King!', '1,000,000 kg total volume lifted!', '👑', '#f59e0b');
+        if (mins <= 30 && activeWorkout.totalXPGained > 0) unlockBadge('b12', 'Badge Unlocked: Phantom Speed!', 'Workout done in under 30 minutes!', '💨', '#00d4ff');
+
         get().syncQuests();
       },
 
@@ -591,6 +653,25 @@ export const useStrngthStore = create<StrngthState>()(
       markNotificationRead: (id) => set(state => ({
         notifications: state.notifications.map(n => n.id === id ? { ...n, read: true } : n),
       })),
+      addNotification: (notif) => {
+        const { notificationSettings } = get();
+        const allowed =
+          (notif.type === 'quest' && notificationSettings.questAlerts) ||
+          (notif.type === 'xp' && notificationSettings.xpMilestones) ||
+          (notif.type === 'levelup' && notificationSettings.xpMilestones) ||
+          (notif.type === 'streak' && notificationSettings.streakWarnings) ||
+          notif.type === 'badge' ||
+          (notif.type === 'social' && notificationSettings.socialActivity);
+        if (!allowed) return;
+        const newNotif: GymNotification = {
+          id: `n-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+          timestamp: Date.now(),
+          read: false,
+          ...notif,
+        };
+        set(state => ({ notifications: [newNotif, ...state.notifications].slice(0, 50) }));
+      },
+
       markAllNotificationsRead: () => set(state => ({
         notifications: state.notifications.map(n => ({ ...n, read: true })),
       })),

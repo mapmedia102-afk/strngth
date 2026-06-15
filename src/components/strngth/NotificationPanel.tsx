@@ -92,7 +92,7 @@ export default function NotificationPanel() {
             transition={{ duration: 0.2 }}
             className="fixed right-4 z-50 w-80 rounded-2xl overflow-hidden"
             style={{
-              top: '72px',
+              top: 'calc(64px + env(safe-area-inset-top) + 8px)',
               background: 'var(--gym-nav-bg)',
               border: '1px solid var(--gym-border-2)',
               backdropFilter: 'blur(24px)',
