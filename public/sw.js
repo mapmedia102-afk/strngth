@@ -1,6 +1,7 @@
-const CACHE_VERSION = 'strngth-v1';
+const CACHE_VERSION = 'strngth-v2';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
+const IMAGE_CACHE = `${CACHE_VERSION}-images`;
 
 // App shell files to pre-cache on install
 const PRECACHE_URLS = [
@@ -30,6 +31,15 @@ function shouldBypass(url) {
   return BYPASS_PATTERNS.some(p => p.test(url));
 }
 
+function isStrngthImage(url) {
+  return (
+    url.includes('/strngth/exercises/') ||
+    url.includes('/strngth/badges/') ||
+    url.includes('/strngth/muscles/') ||
+    url.includes('/strngth/splits/')
+  );
+}
+
 // ── Install: pre-cache the app shell ──────────────────────────────────────────
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -45,7 +55,7 @@ self.addEventListener('activate', event => {
     caches.keys().then(keys =>
       Promise.all(
         keys
-          .filter(k => k.startsWith('strngth-') && k !== STATIC_CACHE && k !== RUNTIME_CACHE)
+          .filter(k => k.startsWith('strngth-') && k !== STATIC_CACHE && k !== RUNTIME_CACHE && k !== IMAGE_CACHE)
           .map(k => caches.delete(k))
       )
     ).then(() => self.clients.claim())
@@ -63,7 +73,7 @@ self.addEventListener('fetch', event => {
   // Bypass Firebase and other network-only resources
   if (shouldBypass(url)) return;
 
-  // Next.js static assets (_next/static) — cache-first
+  // Next.js static assets (_next/static) — cache-first (immutable, hash-named)
   if (url.includes('/_next/static/')) {
     event.respondWith(
       caches.open(STATIC_CACHE).then(cache =>
@@ -73,6 +83,22 @@ self.addEventListener('fetch', event => {
             if (response.ok) cache.put(request, response.clone());
             return response;
           });
+        })
+      )
+    );
+    return;
+  }
+
+  // Strngth exercise / badge / muscle / split images — cache-first (static PNGs)
+  if (isStrngthImage(url)) {
+    event.respondWith(
+      caches.open(IMAGE_CACHE).then(cache =>
+        cache.match(request).then(cached => {
+          if (cached) return cached;
+          return fetch(request).then(response => {
+            if (response.ok) cache.put(request, response.clone());
+            return response;
+          }).catch(() => new Response('', { status: 404 }));
         })
       )
     );

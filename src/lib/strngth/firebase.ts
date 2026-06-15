@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, type Auth } from 'firebase/auth';
-import { getFirestore, type Firestore } from 'firebase/firestore';
+import { initializeFirestore, getFirestore, persistentLocalCache, persistentMultipleTabManager, type Firestore } from 'firebase/firestore';
 
 // Web config from your Firebase project (Project settings → Your apps → Web app).
 // These NEXT_PUBLIC_* values are safe to expose in the client bundle.
@@ -29,7 +29,17 @@ if (isFirebaseConfigured) {
   // getAuth and getFirestore are intentionally called only here — they both
   // establish backend connections on first call, which fails loudly with no config.
   _auth = getAuth(_app);
-  _db = getFirestore(_app);
+  // initializeFirestore must only be called once per app instance.
+  // On HMR the app is reused, so getFirestore is the fallback for
+  // "already initialized" errors — the existing instance already has
+  // offline persistence from the first call.
+  try {
+    _db = initializeFirestore(_app, {
+      localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+    });
+  } catch {
+    _db = getFirestore(_app);
+  }
 }
 
 // All callers guard with isFirebaseConfigured before using these — safe to
