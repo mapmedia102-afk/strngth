@@ -25,14 +25,14 @@ export default function StrngthNav() {
         style={{ background: 'var(--gym-nav-bg)', borderRight: '1px solid var(--gym-border)' }}>
 
         {/* Logo */}
-        <div className="px-6 pt-8 pb-6">
+        <div className="px-6 pb-6" style={{ paddingTop: 'max(32px, env(safe-area-inset-top))' }}>
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg flex items-center justify-center relative"
               style={{ background: 'linear-gradient(135deg, rgba(0,212,255,0.2), rgba(139,92,246,0.2))', border: '1px solid rgba(0,212,255,0.3)' }}>
               <Zap size={18} style={{ color: '#00d4ff' }} />
             </div>
             <span className="text-xl font-black tracking-widest" style={{ fontFamily: 'var(--gym-font-display-loaded, Orbitron, monospace)', color: 'var(--gym-text)' }}>
-              GYM<span style={{ color: '#00d4ff' }}>IFY</span>
+              STR<span style={{ color: '#00d4ff' }}>NGTH</span>
             </span>
           </div>
         </div>
@@ -61,7 +61,7 @@ export default function StrngthNav() {
         </nav>
 
         {/* Player card at bottom */}
-        <div className="px-4 pb-6">
+        <div className="px-4" style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom))' }}>
           <Link href="/strngth/profile">
             <motion.div className="gym-glass rounded-xl p-3 cursor-pointer" whileHover={{ scale: 1.01 }}>
               <div className="flex items-center gap-3">

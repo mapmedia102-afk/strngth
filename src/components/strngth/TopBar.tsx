@@ -28,7 +28,7 @@ export default function TopBar() {
 
   return (
     <motion.header
-      className="fixed top-0 left-0 lg:left-64 right-0 z-30 h-16 flex items-center justify-between px-4 lg:px-6"
+      className="fixed top-0 left-0 lg:left-64 right-0 z-30 flex items-end justify-between px-4 lg:px-6 pb-3"
       initial={{ opacity: 0, y: -16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
@@ -36,6 +36,8 @@ export default function TopBar() {
         background: 'var(--gym-topbar-bg)',
         backdropFilter: 'blur(20px)',
         borderBottom: '1px solid var(--gym-border)',
+        paddingTop: 'max(12px, env(safe-area-inset-top))',
+        minHeight: 'calc(64px + env(safe-area-inset-top))',
       }}
     >
       {/* Left — Avatar + greeting */}

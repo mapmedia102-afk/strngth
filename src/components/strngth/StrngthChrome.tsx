@@ -50,7 +50,7 @@ export default function StrngthChrome({ children }: { children: React.ReactNode 
           <TopBar />
           <main
             className="flex-1 overflow-y-auto"
-            style={{ paddingTop: '64px', paddingBottom: 'calc(80px + env(safe-area-inset-bottom))' }}
+            style={{ paddingTop: 'calc(64px + env(safe-area-inset-top))', paddingBottom: 'calc(80px + env(safe-area-inset-bottom))' }}
           >
             <div className="lg:pl-64">{children}</div>
           </main>
