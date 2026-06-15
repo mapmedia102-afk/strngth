@@ -648,9 +648,9 @@ export default function ProfilePage() {
                 whileTap={{ scale: 0.98 }}
                 className="w-full py-4 rounded-2xl flex items-center justify-center gap-2.5 font-black text-sm tracking-wide"
                 style={{
-                  background: 'rgba(0,212,255,0.06)',
-                  border: '1.5px solid rgba(0,212,255,0.25)',
-                  color: '#00d4ff',
+                  background: 'rgba(239,68,68,0.08)',
+                  border: '1.5px solid rgba(239,68,68,0.35)',
+                  color: '#ef4444',
                   fontFamily: 'var(--gym-font-display-loaded, Orbitron, monospace)',
                 }}
               >
