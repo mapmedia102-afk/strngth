@@ -133,19 +133,19 @@ function SettingsRow({ icon: Icon, label, color = 'var(--gym-text)', danger = fa
     <motion.button
       className="w-full flex items-center gap-4 px-4 py-4 rounded-2xl text-left"
       style={{
-        background: danger ? 'rgba(239,68,68,0.05)' : 'rgba(255,255,255,0.04)',
-        border: `1px solid ${danger ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.08)'}`,
+        background: danger ? 'rgba(239,68,68,0.05)' : 'rgba(255,255,255,0.07)',
+        border: `1px solid ${danger ? 'rgba(239,68,68,0.3)' : 'rgba(255,255,255,0.18)'}`,
       }}
-      whileHover={{ background: danger ? 'rgba(239,68,68,0.09)' : 'rgba(255,255,255,0.07)' }}
+      whileHover={{ background: danger ? 'rgba(239,68,68,0.09)' : 'rgba(255,255,255,0.11)' }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
     >
       <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-        style={{ background: danger ? 'rgba(239,68,68,0.12)' : 'rgba(255,255,255,0.07)', border: `1px solid ${danger ? 'rgba(239,68,68,0.25)' : 'rgba(255,255,255,0.1)'}` }}>
+        style={{ background: danger ? 'rgba(239,68,68,0.12)' : 'rgba(255,255,255,0.11)', border: `1px solid ${danger ? 'rgba(239,68,68,0.35)' : 'rgba(255,255,255,0.22)'}` }}>
         <Icon size={16} style={{ color: danger ? '#ef4444' : color }} />
       </div>
-      <span className="flex-1 text-sm font-semibold" style={{ color: danger ? '#ef4444' : 'var(--gym-text)' }}>{label}</span>
-      <ChevronRight size={15} style={{ color: danger ? 'rgba(239,68,68,0.5)' : 'var(--gym-text-tertiary)' }} />
+      <span className="flex-1 text-sm font-semibold" style={{ color: danger ? '#ef4444' : '#ffffff' }}>{label}</span>
+      <ChevronRight size={15} style={{ color: danger ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.45)' }} />
     </motion.button>
   );
 }
@@ -613,6 +613,104 @@ export default function ProfilePage() {
                 </div>
               </div>
 
+              {/* Subscription */}
+              {(() => {
+                const sub = subscription ?? { isPremium: false, planName: 'free' as const, subscriptionExpiry: null, activatedAt: null };
+                const planName = sub.planName ?? 'free';
+                const planColor = PLAN_COLORS[planName] ?? '#6b7280';
+                const planLabel = PLAN_LABELS[planName] ?? 'Free';
+                const planIcon = PLAN_ICONS[planName] ?? '🔒';
+                const isLight = theme === 'light';
+                const isLifetime = planName === 'lifetime';
+                const expiry = sub.subscriptionExpiry ? new Date(sub.subscriptionExpiry) : null;
+                const isExpired = !isPremium && planName !== 'free' && sub.isPremium;
+                const expiryText = expiry
+                  ? expiry.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+                  : null;
+                const cardBg = isPremium
+                  ? isLight ? `linear-gradient(135deg, ${planColor}14, #ffffff)` : `linear-gradient(135deg, ${planColor}18, rgba(10,10,20,0.9))`
+                  : isLight ? '#ffffff' : 'var(--gym-surface-subtle)';
+                const cardBorder = isPremium ? `${planColor}${isLight ? '60' : '50'}` : isExpired ? 'rgba(239,68,68,0.35)' : isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)';
+                const cardShadow = isPremium ? (isLight ? `0 4px 24px ${planColor}25` : `0 0 28px ${planColor}14`) : isLight ? '0 2px 12px rgba(0,0,0,0.07)' : 'none';
+                const iconBg = isLight ? `${planColor}20` : `${planColor}18`;
+                const iconBorder = isLight ? `${planColor}55` : `${planColor}33`;
+                const ctaBg = isPremium ? (isLight ? `${planColor}18` : `${planColor}14`) : isLight ? 'linear-gradient(135deg, rgba(245,158,11,0.12), rgba(239,68,68,0.07))' : 'linear-gradient(135deg, rgba(245,158,11,0.18), rgba(239,68,68,0.1))';
+                const ctaBorder = isPremium ? `${planColor}${isLight ? '55' : '44'}` : isLight ? 'rgba(245,158,11,0.55)' : 'rgba(245,158,11,0.45)';
+                return (
+                  <div className="rounded-2xl overflow-hidden"
+                    style={{ background: cardBg, border: `1.5px solid ${cardBorder}`, boxShadow: cardShadow }}>
+                    <div className="p-4">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg font-black flex-shrink-0"
+                          style={{ background: iconBg, border: `1px solid ${iconBorder}`, color: planColor }}>
+                          {planIcon}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-black leading-none mb-0.5"
+                            style={{ color: isLight ? 'var(--gym-text)' : planColor, fontFamily: 'var(--gym-font-display-loaded, Orbitron, monospace)' }}>
+                            {planLabel.toUpperCase()}
+                          </p>
+                          <p className="text-[10px]" style={{ color: 'var(--gym-text-muted)' }}>STRNGTH SUBSCRIPTION</p>
+                        </div>
+                        {isPremium && (
+                          <span className="text-[9px] font-black px-2 py-1 rounded-full flex-shrink-0"
+                            style={{ color: '#10b981', background: isLight ? 'rgba(16,185,129,0.1)' : 'rgba(16,185,129,0.12)', border: `1px solid rgba(16,185,129,${isLight ? '0.4' : '0.3'})` }}>
+                            ✓ ACTIVE
+                          </span>
+                        )}
+                        {isExpired && (
+                          <span className="text-[9px] font-black px-2 py-1 rounded-full flex-shrink-0"
+                            style={{ color: '#ef4444', background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)' }}>
+                            EXPIRED
+                          </span>
+                        )}
+                        {!isPremium && !isExpired && (
+                          <span className="text-[9px] font-black px-2 py-1 rounded-full flex-shrink-0"
+                            style={{ color: isLight ? '#4b5563' : '#6b7280', background: 'rgba(107,114,128,0.12)', border: 'rgba(107,114,128,0.25)' }}>
+                            FREE
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] mb-3" style={{ color: 'var(--gym-text-dim)' }}>
+                        {isPremium && isLifetime && 'Lifetime access · Never expires'}
+                        {isPremium && !isLifetime && expiryText && `Expires ${expiryText}`}
+                        {isExpired && expiryText && `Expired ${expiryText}`}
+                        {!isPremium && !isExpired && 'Upgrade to unlock quests, programs & advanced stats'}
+                      </p>
+                      <motion.button
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => setShowPremium(true)}
+                        className="w-full py-2.5 rounded-xl font-black text-[11px] tracking-wider flex items-center justify-center gap-1.5"
+                        style={{ background: ctaBg, color: isLight ? 'var(--gym-text)' : (isPremium ? planColor : '#f59e0b'), border: `1.5px solid ${ctaBorder}` }}>
+                        {isPremium ? 'MANAGE PLAN' : isExpired ? '🔄 RENEW SUBSCRIPTION' : '✨ UPGRADE TO PREMIUM'}
+                      </motion.button>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Log Out */}
+              <motion.button
+                onClick={() => setConfirmLogout(true)}
+                whileTap={{ scale: 0.98 }}
+                className="w-full py-4 rounded-2xl flex items-center justify-center gap-2.5 font-black text-sm tracking-wide"
+                style={{
+                  background: 'rgba(239,68,68,0.08)',
+                  border: '1.5px solid rgba(239,68,68,0.35)',
+                  color: '#ef4444',
+                  fontFamily: 'var(--gym-font-display-loaded, Orbitron, monospace)',
+                }}
+              >
+                <LogOut size={16} />
+                LOG OUT
+              </motion.button>
+            </motion.div>
+          )}
+
+          {/* ── HISTORY ── */}
+          {activeTab === 'history' && (
+            <motion.div key="history" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="space-y-3">
+
               {/* Personal Records */}
               <div className="rounded-2xl p-5" style={{ background: 'var(--gym-surface-subtle)', border: '1px solid var(--gym-border)' }}>
                 <div className="flex items-center gap-2 mb-4">
@@ -642,27 +740,6 @@ export default function ProfilePage() {
                 )}
               </div>
 
-              {/* Log Out */}
-              <motion.button
-                onClick={() => setConfirmLogout(true)}
-                whileTap={{ scale: 0.98 }}
-                className="w-full py-4 rounded-2xl flex items-center justify-center gap-2.5 font-black text-sm tracking-wide"
-                style={{
-                  background: 'rgba(239,68,68,0.08)',
-                  border: '1.5px solid rgba(239,68,68,0.35)',
-                  color: '#ef4444',
-                  fontFamily: 'var(--gym-font-display-loaded, Orbitron, monospace)',
-                }}
-              >
-                <LogOut size={16} />
-                LOG OUT
-              </motion.button>
-            </motion.div>
-          )}
-
-          {/* ── HISTORY ── */}
-          {activeTab === 'history' && (
-            <motion.div key="history" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-black tracking-widest" style={{ color: 'var(--gym-text)', fontFamily: 'var(--gym-font-display-loaded, Orbitron, monospace)' }}>WORKOUT HISTORY</h3>
                 <span className="text-[10px] font-bold px-2 py-1 rounded-lg"
@@ -843,125 +920,6 @@ export default function ProfilePage() {
                 <div className="space-y-2">
                   <SettingsRow icon={Download} label="Export Data" color="#00d4ff" onClick={handleExportData} />
                 </div>
-              </div>
-
-              {/* MEMBERSHIP */}
-              <div>
-                <SectionLabel>MEMBERSHIP</SectionLabel>
-                {(() => {
-                  const sub = subscription ?? { isPremium: false, planName: 'free' as const, subscriptionExpiry: null, activatedAt: null };
-                  const planName = sub.planName ?? 'free';
-                  const planColor = PLAN_COLORS[planName] ?? '#6b7280';
-                  const planLabel = PLAN_LABELS[planName] ?? 'Free';
-                  const planIcon = PLAN_ICONS[planName] ?? '🔒';
-                  const isLight = theme === 'light';
-                  const isLifetime = planName === 'lifetime';
-                  const expiry = sub.subscriptionExpiry ? new Date(sub.subscriptionExpiry) : null;
-                  const isExpired = !isPremium && planName !== 'free' && sub.isPremium;
-                  const expiryText = expiry
-                    ? expiry.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
-                    : null;
-
-                  // Theme-aware tokens
-                  const cardBg = isPremium
-                    ? isLight
-                      ? `linear-gradient(135deg, ${planColor}14, #ffffff)`
-                      : `linear-gradient(135deg, ${planColor}18, rgba(10,10,20,0.9))`
-                    : isLight ? '#ffffff' : 'var(--gym-surface-subtle)';
-
-                  const cardBorder = isPremium
-                    ? `${planColor}${isLight ? '60' : '50'}`
-                    : isExpired
-                      ? 'rgba(239,68,68,0.35)'
-                      : isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)';
-
-                  const cardShadow = isPremium
-                    ? isLight ? `0 4px 24px ${planColor}25` : `0 0 28px ${planColor}14`
-                    : isLight ? '0 2px 12px rgba(0,0,0,0.07)' : 'none';
-
-                  const iconBg = isLight ? `${planColor}20` : `${planColor}18`;
-                  const iconBorder = isLight ? `${planColor}55` : `${planColor}33`;
-
-                  const ctaBg = isPremium
-                    ? isLight ? `${planColor}18` : `${planColor}14`
-                    : isLight
-                      ? 'linear-gradient(135deg, rgba(245,158,11,0.12), rgba(239,68,68,0.07))'
-                      : 'linear-gradient(135deg, rgba(245,158,11,0.18), rgba(239,68,68,0.1))';
-
-                  const ctaBorder = isPremium
-                    ? `${planColor}${isLight ? '55' : '44'}`
-                    : isLight ? 'rgba(245,158,11,0.55)' : 'rgba(245,158,11,0.45)';
-
-                  return (
-                    <div className="rounded-2xl overflow-hidden"
-                      style={{ background: cardBg, border: `1.5px solid ${cardBorder}`, boxShadow: cardShadow }}>
-                      <div className="p-4">
-                        {/* Plan row */}
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg font-black flex-shrink-0"
-                            style={{ background: iconBg, border: `1px solid ${iconBorder}`, color: planColor }}>
-                            {planIcon}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-black leading-none mb-0.5"
-                              style={{ color: isLight ? 'var(--gym-text)' : planColor, fontFamily: 'var(--gym-font-display-loaded, Orbitron, monospace)' }}>
-                              {planLabel.toUpperCase()}
-                            </p>
-                            <p className="text-[10px]" style={{ color: 'var(--gym-text-muted)' }}>STRNGTH SUBSCRIPTION</p>
-                          </div>
-                          {/* Status badge */}
-                          {isPremium && (
-                            <span className="text-[9px] font-black px-2 py-1 rounded-full flex-shrink-0"
-                              style={{
-                                color: '#10b981',
-                                background: isLight ? 'rgba(16,185,129,0.1)' : 'rgba(16,185,129,0.12)',
-                                border: `1px solid rgba(16,185,129,${isLight ? '0.4' : '0.3'})`,
-                              }}>
-                              ✓ ACTIVE
-                            </span>
-                          )}
-                          {isExpired && (
-                            <span className="text-[9px] font-black px-2 py-1 rounded-full flex-shrink-0"
-                              style={{
-                                color: '#ef4444',
-                                background: isLight ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.12)',
-                                border: `1px solid rgba(239,68,68,${isLight ? '0.4' : '0.3'})`,
-                              }}>
-                              EXPIRED
-                            </span>
-                          )}
-                          {!isPremium && !isExpired && (
-                            <span className="text-[9px] font-black px-2 py-1 rounded-full flex-shrink-0"
-                              style={{
-                                color: isLight ? '#4b5563' : '#6b7280',
-                                background: isLight ? 'rgba(75,85,99,0.08)' : 'rgba(107,114,128,0.12)',
-                                border: `1px solid rgba(107,114,128,${isLight ? '0.3' : '0.25'})`,
-                              }}>
-                              FREE
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Expiry / status line */}
-                        <p className="text-[11px] mb-3" style={{ color: 'var(--gym-text-dim)' }}>
-                          {isPremium && isLifetime && 'Lifetime access · Never expires'}
-                          {isPremium && !isLifetime && expiryText && `Expires ${expiryText}`}
-                          {isExpired && expiryText && `Expired ${expiryText}`}
-                          {!isPremium && !isExpired && 'Upgrade to unlock quests, programs & advanced stats'}
-                        </p>
-
-                        {/* CTA — upgrade or manage */}
-                        <motion.button
-                          whileTap={{ scale: 0.97 }}
-                          onClick={() => setShowPremium(true)}
-                          className="w-full py-2.5 rounded-xl font-black text-[11px] tracking-wider flex items-center justify-center gap-1.5"
-                          style={{ background: ctaBg, color: isLight ? 'var(--gym-text)' : (isPremium ? planColor : '#f59e0b'), border: `1.5px solid ${ctaBorder}` }}>
-                          {isPremium ? 'MANAGE PLAN' : isExpired ? '🔄 RENEW SUBSCRIPTION' : '✨ UPGRADE TO PREMIUM'}
-                        </motion.button>
-                      </div>
-                    </div>
-                  );
-                })()}
               </div>
 
               {/* DANGER ZONE */}
