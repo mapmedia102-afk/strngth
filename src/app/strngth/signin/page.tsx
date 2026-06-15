@@ -154,10 +154,10 @@ export default function SignInPage() {
         className="text-4xl font-black mb-1"
         style={{ color: 'var(--gym-text)', fontFamily: 'var(--gym-font-display-loaded, Orbitron, monospace)' }}
       >
-        Let&apos;s Go
+        Welcome Back
       </h1>
       <p className="text-sm mb-8" style={{ color: 'var(--gym-text-muted)' }}>
-        Enter your email and password. We&apos;ll sign you in or create your account automatically.
+        Sign in to continue your journey.
       </p>
 
       {/* Fields */}
