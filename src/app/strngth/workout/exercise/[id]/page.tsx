@@ -28,20 +28,35 @@ function AnatomyImage({ src, alt }: { src: string; alt: string }) {
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const d = imageData.data;
 
+      // Detect background from top-left corner pixel
+      const bgR = d[0], bgG = d[1], bgB = d[2];
+      const bgLum = (bgR * 299 + bgG * 587 + bgB * 114) / 1000;
+      const lightBg = bgLum > 128; // white/light bg vs dark/black bg
+
       for (let i = 0; i < d.length; i += 4) {
         const r = d[i], g = d[i + 1], b = d[i + 2];
-        const lum = (r * 299 + g * 587 + b * 114) / 1000;
-        // chroma = colorfulness: high for red muscle, near-0 for grey spots/background
         const chroma = Math.max(r, g, b) - Math.min(r, g, b);
 
-        if (lum < 4) {
-          d[i + 3] = 0; // black background → fully transparent
-        } else if (chroma >= 28 || lum >= 82) {
-          // colorful pixel (muscle highlight) OR bright pixel (figure/machine) → keep
+        if (lightBg) {
+          // White-background image: remove pixels close to background color
+          const dist = Math.sqrt((r - bgR) ** 2 + (g - bgG) ** 2 + (b - bgB) ** 2);
+          if (dist < 20) {
+            d[i + 3] = 0;
+          } else if (dist < 55) {
+            d[i + 3] = Math.round(((dist - 20) / 35) * 255);
+          }
+          // dist >= 55 → fully opaque (figure, muscle, machine details)
         } else {
-          // dark + grey = shadow spot → fade out smoothly
-          const t = Math.min(1, (lum - 4) / 52); // 0 at lum=4, 1 at lum=56
-          d[i + 3] = Math.round(t * d[i + 3]);
+          // Dark-background image: keep colorful (muscle) or bright (figure/machine), remove grey spots
+          const lum = (r * 299 + g * 587 + b * 114) / 1000;
+          if (lum < 4) {
+            d[i + 3] = 0;
+          } else if (chroma >= 28 || lum >= 82) {
+            // keep opaque
+          } else {
+            const t = Math.min(1, (lum - 4) / 52);
+            d[i + 3] = Math.round(t * d[i + 3]);
+          }
         }
       }
 
