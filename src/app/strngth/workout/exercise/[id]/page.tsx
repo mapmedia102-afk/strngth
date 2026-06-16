@@ -27,19 +27,22 @@ function AnatomyImage({ src, alt }: { src: string; alt: string }) {
 
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const d = imageData.data;
-      const FADE_END = 75; // luminance threshold — below this, pixels fade out
 
       for (let i = 0; i < d.length; i += 4) {
         const r = d[i], g = d[i + 1], b = d[i + 2];
         const lum = (r * 299 + g * 587 + b * 114) / 1000;
+        // chroma = colorfulness: high for red muscle, near-0 for grey spots/background
+        const chroma = Math.max(r, g, b) - Math.min(r, g, b);
 
-        if (lum < 5) {
-          d[i + 3] = 0; // pure black bg → fully transparent
-        } else if (lum < FADE_END) {
-          // Dark spots → smooth alpha fade (0 at lum=5, 255 at lum=FADE_END)
-          d[i + 3] = Math.round(((lum - 5) / (FADE_END - 5)) * 255);
+        if (lum < 4) {
+          d[i + 3] = 0; // black background → fully transparent
+        } else if (chroma >= 28 || lum >= 82) {
+          // colorful pixel (muscle highlight) OR bright pixel (figure/machine) → keep
+        } else {
+          // dark + grey = shadow spot → fade out smoothly
+          const t = Math.min(1, (lum - 4) / 52); // 0 at lum=4, 1 at lum=56
+          d[i + 3] = Math.round(t * d[i + 3]);
         }
-        // lum >= FADE_END → alpha stays 255 (opaque): figure, red muscle, equipment
       }
 
       ctx.putImageData(imageData, 0, 0);
