@@ -27,7 +27,7 @@ function AnatomyImage({ src, alt }: { src: string; alt: string }) {
 
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const d = imageData.data;
-      const FADE_END = 58; // luminance threshold — below this, pixels fade out
+      const FADE_END = 25; // luminance threshold — below this, pixels fade out
 
       for (let i = 0; i < d.length; i += 4) {
         const r = d[i], g = d[i + 1], b = d[i + 2];
@@ -57,7 +57,7 @@ function AnatomyImage({ src, alt }: { src: string; alt: string }) {
       src={dataUrl}
       alt={alt}
       className="absolute inset-0 w-full h-full object-contain object-center"
-      style={{ padding: '12px 20px 48px' }}
+      style={{ padding: '8px 12px 16px' }}
     />
   );
 }

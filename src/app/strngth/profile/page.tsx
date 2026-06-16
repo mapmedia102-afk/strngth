@@ -126,26 +126,31 @@ function WorkoutCard({ workout, index }: { workout: WorkoutHistory; index: numbe
   );
 }
 
-function SettingsRow({ icon: Icon, label, color = 'var(--gym-text)', danger = false, onClick }: {
-  icon: React.ElementType; label: string; color?: string; danger?: boolean; onClick?: () => void;
+function SettingsRow({ icon: Icon, label, color = 'var(--gym-text)', danger = false, isLight = false, onClick }: {
+  icon: React.ElementType; label: string; color?: string; danger?: boolean; isLight?: boolean; onClick?: () => void;
 }) {
+  const rowBg      = isLight ? 'rgba(0,0,0,0.05)'  : 'rgba(255,255,255,0.07)';
+  const rowBorder  = isLight ? 'rgba(0,0,0,0.16)'  : 'rgba(255,255,255,0.18)';
+  const iconBg     = isLight ? 'rgba(0,0,0,0.07)'  : 'rgba(255,255,255,0.11)';
+  const iconBorder = isLight ? 'rgba(0,0,0,0.14)'  : 'rgba(255,255,255,0.22)';
+  const chevron    = isLight ? 'rgba(0,0,0,0.38)'  : 'rgba(255,255,255,0.45)';
   return (
     <motion.button
       className="w-full flex items-center gap-4 px-4 py-4 rounded-2xl text-left"
       style={{
-        background: danger ? 'rgba(239,68,68,0.05)' : 'rgba(255,255,255,0.07)',
-        border: `1px solid ${danger ? 'rgba(239,68,68,0.3)' : 'rgba(255,255,255,0.18)'}`,
+        background: danger ? 'rgba(239,68,68,0.05)' : rowBg,
+        border: `1px solid ${danger ? 'rgba(239,68,68,0.3)' : rowBorder}`,
       }}
-      whileHover={{ background: danger ? 'rgba(239,68,68,0.09)' : 'rgba(255,255,255,0.11)' }}
+      whileHover={{ background: danger ? 'rgba(239,68,68,0.09)' : isLight ? 'rgba(0,0,0,0.09)' : 'rgba(255,255,255,0.11)' }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
     >
       <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-        style={{ background: danger ? 'rgba(239,68,68,0.12)' : 'rgba(255,255,255,0.11)', border: `1px solid ${danger ? 'rgba(239,68,68,0.35)' : 'rgba(255,255,255,0.22)'}` }}>
+        style={{ background: danger ? 'rgba(239,68,68,0.12)' : iconBg, border: `1px solid ${danger ? 'rgba(239,68,68,0.35)' : iconBorder}` }}>
         <Icon size={16} style={{ color: danger ? '#ef4444' : color }} />
       </div>
-      <span className="flex-1 text-sm font-semibold" style={{ color: danger ? '#ef4444' : '#ffffff' }}>{label}</span>
-      <ChevronRight size={15} style={{ color: danger ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.45)' }} />
+      <span className="flex-1 text-sm font-semibold" style={{ color: danger ? '#ef4444' : 'var(--gym-text)' }}>{label}</span>
+      <ChevronRight size={15} style={{ color: danger ? 'rgba(239,68,68,0.6)' : chevron }} />
     </motion.button>
   );
 }
@@ -222,6 +227,7 @@ export default function ProfilePage() {
     subscription,
   } = useStrngthStore();
   const isPremium = deriveIsPremium(subscription);
+  const isLight = theme === 'light';
   const router = useRouter();
   const rankCfg = getRankConfig(player.rank);
   const unlockedBadges = badges.filter(b => b.unlocked);
@@ -499,15 +505,15 @@ export default function ProfilePage() {
                 onClick={() => setActiveTab(tab.id)}
                 className="flex flex-col items-center gap-1 py-2.5 rounded-2xl"
                 style={{
-                  background: active ? `${rankCfg.color}18` : 'rgba(255,255,255,0.08)',
-                  border: `1.5px solid ${active ? rankCfg.color + '80' : 'rgba(255,255,255,0.22)'}`,
+                  background: active ? `${rankCfg.color}18` : isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.08)',
+                  border: `1.5px solid ${active ? rankCfg.color + '80' : isLight ? 'rgba(0,0,0,0.18)' : 'rgba(255,255,255,0.22)'}`,
                   boxShadow: active ? `0 0 12px ${rankCfg.color}35` : 'none',
                 }}
                 whileTap={{ scale: 0.94 }}
               >
-                <Icon size={16} style={{ color: active ? rankCfg.color : 'rgba(255,255,255,0.75)' }} />
+                <Icon size={16} style={{ color: active ? rankCfg.color : isLight ? 'rgba(0,0,0,0.55)' : 'rgba(255,255,255,0.75)' }} />
                 <span className="text-[9px] font-bold"
-                  style={{ color: active ? rankCfg.color : 'rgba(255,255,255,0.75)', fontFamily: 'var(--gym-font-display-loaded, Orbitron, monospace)', letterSpacing: '0.05em' }}>
+                  style={{ color: active ? rankCfg.color : isLight ? 'rgba(0,0,0,0.55)' : 'rgba(255,255,255,0.75)', fontFamily: 'var(--gym-font-display-loaded, Orbitron, monospace)', letterSpacing: '0.05em' }}>
                   {tab.label.toUpperCase()}
                 </span>
               </motion.button>
@@ -855,10 +861,10 @@ export default function ProfilePage() {
               <div>
                 <SectionLabel>ACCOUNT</SectionLabel>
                 <div className="space-y-2">
-                  <SettingsRow icon={User}   label="Edit Profile"  color="#00d4ff" onClick={openEditProfile} />
-                  <SettingsRow icon={Camera} label="Change Avatar"  color="#8b5cf6" onClick={openChangeAvatar} />
-                  <SettingsRow icon={Bell}   label="Notifications"  color="#f59e0b" onClick={() => setShowNotifications(true)} />
-                  <SettingsRow icon={Eye}    label="Privacy"        color="#10b981" onClick={() => setShowPrivacy(true)} />
+                  <SettingsRow icon={User}   label="Edit Profile"  color="#00d4ff" isLight={isLight} onClick={openEditProfile} />
+                  <SettingsRow icon={Camera} label="Change Avatar"  color="#8b5cf6" isLight={isLight} onClick={openChangeAvatar} />
+                  <SettingsRow icon={Bell}   label="Notifications"  color="#f59e0b" isLight={isLight} onClick={() => setShowNotifications(true)} />
+                  <SettingsRow icon={Eye}    label="Privacy"        color="#10b981" isLight={isLight} onClick={() => setShowPrivacy(true)} />
                 </div>
               </div>
 
@@ -918,7 +924,7 @@ export default function ProfilePage() {
               <div>
                 <SectionLabel>DATA</SectionLabel>
                 <div className="space-y-2">
-                  <SettingsRow icon={Download} label="Export Data" color="#00d4ff" onClick={handleExportData} />
+                  <SettingsRow icon={Download} label="Export Data" color="#00d4ff" isLight={isLight} onClick={handleExportData} />
                 </div>
               </div>
 
@@ -926,7 +932,7 @@ export default function ProfilePage() {
               <div>
                 <SectionLabel>DANGER ZONE</SectionLabel>
                 <div className="space-y-2">
-                  <SettingsRow icon={RotateCcw} label="Reset Progress" danger onClick={() => setConfirmReset(true)} />
+                  <SettingsRow icon={RotateCcw} label="Reset Progress" danger isLight={isLight} onClick={() => setConfirmReset(true)} />
                 </div>
               </div>
             </motion.div>
