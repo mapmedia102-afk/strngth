@@ -289,9 +289,9 @@ export default function SignInPage() {
       {/* Policy */}
       <p className="text-center text-[11px] leading-relaxed mt-6" style={{ color: 'var(--gym-text-tertiary)' }}>
         By continuing you agree to STRNGTH&apos;s{' '}
-        <a href="https://strngth.app/terms" target="_blank" rel="noopener noreferrer" style={{ color: CYAN }}>Terms of Service</a>
+        <a href="/strngth/terms" style={{ color: CYAN }}>Terms of Service</a>
         {' '}and{' '}
-        <a href="https://strngth.app/privacy" target="_blank" rel="noopener noreferrer" style={{ color: CYAN }}>Privacy Policy</a>.
+        <a href="/strngth/privacy" style={{ color: CYAN }}>Privacy Policy</a>.
       </p>
     </div>
   );
